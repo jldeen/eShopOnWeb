@@ -7,8 +7,8 @@ image:
 service:
   name: dotnetcore
   type: ClusterIP
-  externalPort: 8080
-  internalPort: 80
+  externalPort: 80
+  internalPort: 5107
 resources:
   limits:
     cpu: 1

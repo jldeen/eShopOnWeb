@@ -24,6 +24,9 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.service.internalPort }}
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Development"
         resources:
 {{ toYaml .Values.resources | indent 12 }}
       nodeSelector:

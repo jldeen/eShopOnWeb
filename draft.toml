@@ -1,6 +1,6 @@
 [environments]
   [environments.development]
-    name = "eShopOnWeb"
+    name = "eshoponweb"
     namespace = "default"
     wait = true
     watch = false

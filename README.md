@@ -91,3 +91,58 @@ You can run both the Web and WebRazorPages samples at the same time by running t
 You should be able to make requests to localhost:5106 and localhost:5107 once these commands complete.
 
 You can run just the Web or WebRazorPages application by using the instructions located in their respective `Dockerfile` files in the root of the projects. Again, run these commands from the root of the solution (where the .sln file is located).
+
+## Running the sample on Kubernetes using Draft
+
+1. Modify `draft.toml`, and set a unique name and namespace (optional) for your Kubernetes deployment
+2. If you want to use a Kubernetes ingress controller, set the `basedomain` in the last line. Otherwise, you can delete it
+
+```toml
+[environments]
+  [environments.development]
+    name = "eshoponweb"
+    namespace = "default"
+    wait = true
+    watch = false
+    watch-delay = 2
+    auto-connect = false
+    dockerfile = "src/WebRazorPages/Dockerfile"
+    chart = ""
+    set = ["ingress.enabled=true", "basedomain=kkna.ogfg.link"]
+```
+
+3. Run `draft up`
+4. Now, use `helm list` and `helm status` to check on the deployment. `helm status` will include a link to access your site.
+
+```
+helm list
+NAME            REVISION        UPDATED                         STATUS          CHART                   APP VERSION     NAMESPACE
+aspnetapp       4               Thu Dec  6 00:15:55 2018        DEPLOYED        aspnetapp-v0.0.1                        default
+eshoponweb      3               Fri Dec  7 06:57:07 2018        DEPLOYED        eshoponweb-v0.0.1                       default
+nginx-ingress   1               Thu Dec  6 22:49:06 2018        DEPLOYED        nginx-ingress-1.0.1     0.21.0          default
+PS C:\repos\eShopOnWeb> helm status eshoponweb
+LAST DEPLOYED: Fri Dec  7 06:57:07 2018
+NAMESPACE: default
+STATUS: DEPLOYED
+
+RESOURCES:
+==> v1/Service
+NAME                   AGE
+eshoponweb-eshoponweb  45m
+
+==> v1/Deployment
+eshoponweb-eshoponweb  45m
+
+==> v1beta1/Ingress
+eshoponweb-eshoponweb  45m
+
+==> v1/Pod(related)
+
+NAME                                    READY  STATUS   RESTARTS  AGE
+eshoponweb-eshoponweb-547775c567-zpt7h  1/1    Running  0         4m
+
+
+NOTES:
+
+  http://eshoponweb.kkna.ogfg.link to access your application
+```

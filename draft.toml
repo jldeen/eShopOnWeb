@@ -1,0 +1,11 @@
+[environments]
+  [environments.development]
+    name = "eShopOnWeb"
+    namespace = "default"
+    wait = true
+    watch = false
+    watch-delay = 2
+    auto-connect = false
+    dockerfile = "src/WebRazorPages/Dockerfile"
+    chart = ""
+    set = ["ingress.enabled=true", "basedomain=kkna.ogfg.link"]

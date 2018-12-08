@@ -13,7 +13,7 @@ steps:
     candidate: ${{BuildingDockerImage}}
     image_name: kubecon18/eshopweb
     tag: '${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}'
-    registry: jdk8sacr
+    registry: acrjdk8s
   PackageHelmChart:
       image: devth/helm
       commands:

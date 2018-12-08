@@ -4,6 +4,8 @@
 replicaCount: 1
 image:
   pullPolicy: IfNotPresent
+imagePullSecrets:
+  name: acrjdk8s
 service:
   name: dotnetcore
   type: ClusterIP

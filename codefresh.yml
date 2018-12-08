@@ -5,7 +5,7 @@ steps:
     type: build
     image_name: kubecon18/eshopweb
     working_directory: ./
-    dockerfile: Dockerfile
+    dockerfile: src/WebRazorPages/Dockerfile
     tag: '${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}'
   PushingDockerImage:
     title: Promote to Azure Container Registry

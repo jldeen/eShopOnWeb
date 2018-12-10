@@ -8,7 +8,7 @@ imagePullSecrets:
   name: acrjdk8s
 service:
   name: dotnetcore
-  type: ClusterIP
+  type: LoadBalancer
   externalPort: 80
   internalPort: 5107
 resources:

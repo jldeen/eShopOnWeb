@@ -1,36 +1,50 @@
 version: '1.0'
+stages:
+  - "build"
 steps:
   BuildingDockerImage:
     title: Building Docker Image
     type: build
-    image_name: kubecon18/eshopweb
+    stage: "build"
+    image_name: eshopweb
     working_directory: ./
     dockerfile: src/WebRazorPages/Dockerfile
     tag: '${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}'
+    
   PushingDockerImage:
     title: Promote to Azure Container Registry
     type: push
+    stage: "build"
     candidate: ${{BuildingDockerImage}}
-    image_name: kubecon18/eshopweb
+    image_name: eshopweb
     tag: '${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}'
-    registry: acrjdk8s
+    registry: acrjdtest
+# --- 2nd pipeline ----
+version: '1.0'
+stages:
+	- "deploy"
+steps:
   PackageHelmChart:
-      image: devth/helm
-      commands:
-        - cf_export PACKAGE=$(helm package .charts/eShopOnWeb | cut -d " " -f 8)
+    image: devth/helm
+    stage: "deploy"
+    commands:
+      - cf_export PACKAGE=$(helm package .charts/eShopOnWeb | cut -d " " -f 8)
+  
+  createpullsecret:
+    image: codefresh/cli
+    stage: "deploy"
+    commands:
+    - codefresh generate image-pull-secret --cluster ${{KUBE_CONTEXT}} --namespace ${{NAMESPACE}} --registry acrjdtest
+  
   Deploy_with_Helm:
-    image: codefresh/cfstep-helm:2.11.0
+    image: codefresh/cfstep-helm:2.14.1
+    stage: "deploy"
     when:
       branch:
         only:
           - patricklang/k8s-win
     environment:
       - custom_commit_sha=${{CF_SHORT_REVISION}}
-      - custom_image_repository=jdk8s.azurecr.io/kubecon18/eshopweb
+      - custom_image_repository=acrjdtest.azurecr.io/eshopweb
       - custom_image_tag=${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}
-      - custom_basedomain=${{INGRESS_HOSTNAME}}
-    on_success:
-      metadata:
-        set:
-          - '${{BuildingDockerImage.imageId}}':
-            - DEPLOYED_TO_AZURE_AKS: true
+      - custom_imagePullSecrets_name=codefresh-generated-acrjdtest.azurecr.io-acrjdtest-${{NAMESPACE}}
